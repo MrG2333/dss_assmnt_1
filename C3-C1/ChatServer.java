@@ -57,14 +57,6 @@ public class ChatServer {
         this.socket = socket;
     }
 
-        /**
-         * Services this thread's client by repeatedly requesting a screen name until a
-         * unique one has been submitted, then acknowledges the name and registers the
-         * output stream for the client in a global set, then repeatedly gets inputs and
-         * broadcasts them.
-         * 
-         *
-         */
 
         public void RegisterName(String name) {
             synchronized (names) {
@@ -82,17 +74,6 @@ public class ChatServer {
         in = new BufferedReader(new InputStreamReader(
                                   socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
-
-        // Request a name from this client.  Keep requesting until
-        // a name is submitted that is not already used.  Note that
-        // checking for the existence of a name and adding the name
-        // must be done while locking the set of names.
-        
-        
-        //black magic that was not in the lectures 
-        /*
-        
-        **/
 
         String name = "unknown"; 
         writers.add(out);
