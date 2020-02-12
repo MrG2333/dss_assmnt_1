@@ -27,10 +27,6 @@ import java.util.HashSet;
  */
 public class ChatServer {
 
-    /**
-     * The port that the server listens on.
-     */
-    private static final int PORT = 5000;
 
     /**
      * The set of all names of clients in the chat room.  Maintained
@@ -86,13 +82,19 @@ public class ChatServer {
         this.socket = socket;
     }
 
-    /**
-         * Services this thread's client by repeatedly requesting a
-         * screen name until a unique one has been submitted, then
-         * acknowledges the name and registers the output stream for
-         * the client in a global set, then repeatedly gets inputs and
+        /**
+         * Services this thread's client by repeatedly requesting a screen name until a
+         * unique one has been submitted, then acknowledges the name and registers the
+         * output stream for the client in a global set, then repeatedly gets inputs and
          * broadcasts them.
+         * 
+         *
          */
+
+        public void RegisterName(String name) {
+        names.add(name);
+    }
+
     public void run() {
         try {
 
@@ -105,35 +107,48 @@ public class ChatServer {
         // a name is submitted that is not already used.  Note that
         // checking for the existence of a name and adding the name
         // must be done while locking the set of names.
-        while (true) {
-            out.println("SUBMITNAME");
-            name = in.readLine();
-            if (name == null) {
-            return;
-            }
-            synchronized (names) {
+        
+        
+        //black magic that was not in the lectures 
+        /*
+        synchronized (names) {
             if (!names.contains(name)) {
                 names.add(name);
-                break;
             }
             }
-        }
+        **/
 
-        // Now that a successful name has been chosen, add the
-        // socket's print writer to the set of all writers so
-        // this client can receive broadcast messages.
-        out.println("NAMEACCEPTED");
+        String name = "unknown"; 
         writers.add(out);
-
-        // Accept messages from this client and broadcast them.
-        // Ignore other clients that cannot be broadcasted to.
+        
+        String input;
+        String first_word;
+        
         while (true) {
-            String input = in.readLine();
-            if (input == null) {
-            return;
+            input = in.readLine();
+            first_word =  input.split(" ")[0];
+            //here we implement the dictionary
+            // could make classes but meh
+            if(first_word.equals("REGISTER")){
+                if(input.split(" ").length<2) 
+                    out.println("REGISTER <name>");
+                else 
+                {
+                    name = input.split(" ")[1];
+                    RegisterName(name);    
+                    }
             }
+            else if(first_word.equals("UNREGISTER")){
+                name = "unknown";
+                names.remove(name);
+            }
+            
+            
+            System.out.println("["+name+"] "+input);
             for (PrintWriter writer : writers) {
-            writer.println("MESSAGE " + name + ": " + input);
+                
+                writer.println(name + ": " + input);
+                writer.flush();
             }
         }
         } catch (IOException e) {
