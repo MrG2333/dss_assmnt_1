@@ -17,10 +17,13 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.HashMap;
 
 
 public class ChatServer {
 
+    //hashmap because you need to get the connection based on the name 
+    private static HashMap<String, PrintWriter> cl_name_conn = new HashMap<String, PrintWriter>();
 
     private static HashSet<String> names = new HashSet<String>();
 
@@ -83,18 +86,9 @@ public class ChatServer {
                                   socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
 
-        // Request a name from this client.  Keep requesting until
-        // a name is submitted that is not already used.  Note that
-        // checking for the existence of a name and adding the name
-        // must be done while locking the set of names.
-        
-        
-        //black magic that was not in the lectures 
-        /*
-        
-        **/
 
         String name = "unknown"; 
+        
         writers.add(out);
         
         String input;
@@ -106,12 +100,13 @@ public class ChatServer {
             //here we implement the dictionary
             // could make classes but meh
             if(first_word.equals("REGISTER")){
-                if(input.split(" ").length<2) 
+                if(input.split(" ").length<2)
                     out.println("REGISTER <name>");
                 else 
                 {
                     name = input.split(" ")[1];
                     RegisterName(name);    
+                    cl_name_conn.put(name,out);
                     }
             }
             else if(first_word.equals("UNREGISTER")){
@@ -121,10 +116,15 @@ public class ChatServer {
             
             
             System.out.println("["+name+"] "+input);
-            for (PrintWriter writer : writers) {
-                
-                writer.println(name + ": " + input);
-                writer.flush();
+            if(!name.equals("unknown"))
+            {    
+                for (PrintWriter writer : writers) {
+                    writer.println(name + ": " + input);
+                    writer.flush();
+                }
+            }
+            else{
+                out.println("first REGISTER <name>");
             }
         }
         } catch (IOException e) {
