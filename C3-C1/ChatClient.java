@@ -1,5 +1,3 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,22 +5,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 
-/**
- * A simple Swing-based client for the chat server.  Graphically
- * it is a frame with a text field for entering messages and a
- * textarea to see the whole dialog.
- *
- * The client follows the Chat Protocol which is as follows.
- * When the server sends "SUBMITNAME" the client replies with the
- * desired screen name.  The server will keep sending "SUBMITNAME"
- * requests as long as the client submits screen names that are
- * already in use.  When the server sends a line beginning
- * with "NAMEACCEPTED" the client is now allowed to start
- * sending the server arbitrary strings to be broadcast to all
- * chatters connected to the server.  When the server sends a
- * line beginning with "MESSAGE " then all characters following
- * this string should be displayed in its message area.
- */
+
 public class ChatClient {
 
     BufferedReader in;
@@ -30,15 +13,7 @@ public class ChatClient {
     PrintWriter out;
     
 
-    /**
-     * Constructs the client by laying out the GUI and registering a
-     * listener with the textfield so that pressing Return in the
-     * listener sends the textfield contents to the server.  Note
-     * however that the textfield is initially NOT editable, and
-     * only becomes editable AFTER the client receives the NAMEACCEPTED
-     * message from the server.
-     */
-    
+ 
     private void run(String hostname, int port) throws IOException {
 
         // Make connection and initialize streams
@@ -55,7 +30,7 @@ public class ChatClient {
         String msg;
         String first_word;
         
-        // Process all messages from server, according to the protocol.
+        
         while (true) {
             
             while(in.ready())
