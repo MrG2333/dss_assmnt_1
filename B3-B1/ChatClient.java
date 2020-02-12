@@ -1,3 +1,19 @@
+/**         Security not a concern for this assignment.
+ *          
+ * 
+ *      [x] multi client server based on socket comunications
+ *      [ ] the server can handle 1 to 1 comunication between two clients, and user groups,
+ *          where clients can leave and join and leave thse groups
+ *      [ ] set of commands for groups , not list all groups required 
+ *          - [ ] CREATE group
+ *          - [ ] JOIN group
+ *          - [ ] LEAVE group
+ *          - [ ] REMOVE group
+ *      [ ] command for message to a person
+ * 
+ *      Security not a concern for this assignment but better do things server side.
+ */
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
