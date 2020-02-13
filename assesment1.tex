@@ -1,0 +1,71 @@
+\title{Assignment 1 \\ Socket Based Multi Client Chat}
+\author{George Stoian\\51768284}
+
+
+\documentclass[12pt]{article}
+\date{}
+\setcounter{secnumdepth}{0}
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+All the requirements for all grades starting from Grade D3-D1 to grade A5-A1 have been completed. 
+
+
+\section{How to run the code}
+In order to start the server on port 5000:
+\begin{verbatim}
+java ChatServer.java 5000
+\end{verbatim}
+In order to connect a client on the server on localhost on port 5000:
+\begin{verbatim}
+java ChatClient.java localhost 5000
+\end{verbatim}
+
+\section{How to use the chat}
+After the connection has been established. The client can see what public messages are beeing sent by other users but can send a message only after he has registered with the command REGISTER name. After this the user can use any commands from the below list in order to interact with other users and the server.
+
+\section{Commands implemented list}
+\begin{verbatim}
+
+{User Registration}
+REGISTER <name>
+UNREGISTER
+
+{Group management}
+CREATE GROUP <group>
+JOIN <group>
+SEND <group>/<user_name> message
+LEAVE <group>
+REMOVE <group>
+
+
+{Topic Management}
+TOPIC <keyword>
+TOPICS
+SUBSCRIBE <keyword>
+UNSUBSCRIBE <keyword>
+
+\end{verbatim}
+
+\section{Server behaviour}
+If a client closes the connection with CTRL+C then the server send to its out stdout that A client has closed the connection. And that the connection client record will be deleted from groups, topics and the name,connection HashMaps.
+
+\section{Client behaviour}
+The client sends a message to the Server, if the message had commands then the server resposnds acordingly. If no commands have been given then the message is relayed to all other clients. If the client is part of group and receives a message from another member of that group then the message has the group name in front of it. If a client wants to send a message to a group but he is not part of it then the client is informed that he first has to JOIN the group.
+If a client SUBSCRIBES to a topic then he is informed of any message sent on the server that contains that message. If the user sends a message to another client then that message is showed only to that client excepting the case where someone is subscribed to a topic that is part of the message. This causes a certain lack of privacy has been implemented in this way because grade A requirements were considered to have priory over grade B requirements.
+
+\section{Examples with screenshots}
+Create a Group.
+- 3 users
+- 1 server
+Purpose: Demonstrate that the message is given only to the users part of the group.
+
+
+\end{document}
+
+  

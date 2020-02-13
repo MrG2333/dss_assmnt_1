@@ -34,12 +34,10 @@ public class ChatClient {
 
             while (in.ready()) {
                 msg = in.readLine();
-                
                 //if its own name 
                 if (!msg.split(":")[0].equals(name)){ 
-                //&& !msg.split(":")[0].toUpperCase().equals(msg.split(":")[0])) {
-                    System.out.println(msg);
-                    
+                
+                    System.out.println(msg);   
                 }
             }
 

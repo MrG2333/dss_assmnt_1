@@ -1,0 +1,7 @@
+\contentsline {section}{Introduction}{1}
+\contentsline {section}{How to run the code}{1}
+\contentsline {section}{How to use the chat}{2}
+\contentsline {section}{Commands implemented list}{2}
+\contentsline {section}{Server behaviour}{3}
+\contentsline {section}{Client behaviour}{3}
+\contentsline {section}{Examples with screenshots}{3}

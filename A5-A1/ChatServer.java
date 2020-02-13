@@ -72,7 +72,7 @@ public class ChatServer {
                                         socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
-                
+                out.println("Connection to the Server established");
                 String conn_counter_str= Integer.toString(c_cnn);
                 String name = "unknown" + conn_counter_str ; 
                 
@@ -88,7 +88,7 @@ public class ChatServer {
                     System.out.println("["+name+"] "+input);
                     final String[] split_input = input.split(" ");
                     first_word =  split_input[0];
-                    final String local_name = name;
+                    final String local_name_0 = name;
                     
                     //go trough connections
                     cl_name_conn.forEach((name_conn,writer_l) ->
@@ -99,7 +99,7 @@ public class ChatServer {
                                 // if connection subscribed to topic
                                 if(topics.get(split_input[i]).containsKey(name_conn)){
                                     
-                                    writer_l.println("["+split_input[1]+"]"+local_name+":"+input);
+                                    writer_l.println("["+split_input[i]+"]"+local_name_0+":"+input);
                                     writer_l.flush();
                                     //only need to display the message once
                                     i  = split_input.length;
@@ -131,20 +131,26 @@ public class ChatServer {
                             {   out.println("SEND <name> message");}
                             else {
                                 if(groups.containsKey(split_input[1])){
-                                    for (int i = 2; i < split_input.length; i++) {                      
-                                        reconstruct = reconstruct+" "+split_input[i];
-                                    final String group_name=split_input[1];
-                                    final String local_name = name;
-                                    final String local_reconstruct = reconstruct;
-                                    groups.get(split_input[1]).forEach((name_conn,writer_l) ->
-                                    {
-                                        writer_l.println("["+group_name+"]"+local_name+": "+local_reconstruct) ;
-                                        writer_l.flush();
-                                    });
+                                    if(groups.get(split_input[1]).containsKey(name)){
+                                        for (int i = 2; i < split_input.length; i++) {                      
+                                            reconstruct = reconstruct+" "+split_input[i];
+                                        }
+                                        final String group_name=split_input[1];
+                                        final String local_name = name;
+                                        final String local_reconstruct = reconstruct;
+                                    
+                                        groups.get(split_input[1]).forEach((name_conn,writer_l) ->
+                                        {
+                                            writer_l.println("["+group_name+"]"+local_name+": "+local_reconstruct) ;
+                                            writer_l.flush();
+                                        });
                                    
                                     }
+                                    else{
+                                        out.println("You first have to JOIN <group>");
+                                    }
                                 }
-                                //check if part of group
+                                
                                 else if (cl_name_conn.containsKey(split_input[1])) {
                                     writer_local = cl_name_conn.get(split_input[1]);
                                     for (int i = 2; i < split_input.length; i++) {                      
@@ -221,8 +227,13 @@ public class ChatServer {
                         if(split_input.length < 2 || split_input.length > 2)
                         {   out.println("SUBSCRIBE <keyword>");}
                         else {
+                            if(topics.containsKey(split_input[1])){
                             topics.get(split_input[1]).put(name,out);
                             topics.get(split_input[1]).get(name).println("You subscribed to "+ split_input[1]);
+                            }
+                            else {
+                                out.println("Topic does not exist");
+                            }
                         }
                         
                     }
@@ -246,25 +257,36 @@ public class ChatServer {
 
                     if(!name.equals("unknown"+conn_counter_str) && !first_word.equals("SEND"))
                     {    
-                        final String local_input = input;
-                        final String local_name = name;
+                        final String local_input_2 = input;
+                        final String local_name_2 = name;
                         cl_name_conn.forEach((name_conn,writer_l) ->
                         {
-                            writer_l.println(local_name+": "+local_input) ;
+                            writer_l.println(local_name_2+": "+local_input_2) ;
                             writer_l.flush();
-                        });
-                        
-                    }
-                    
-                
+                        });  
+                    } 
                 }
             } catch (IOException e) {
-                System.out.println(e);
+               System.out.println("A client has closed the connection.");
             } finally {
                 ///Remove the
                 /// hash maps are not as cool as hashsets
+                System.out.println("A client has closed the connection. Removing him from groups, topics and connections.");
                 if (name != null) {
-                    names.remove(name);
+                    cl_name_conn.remove(name);
+                    groups.forEach((group_name,group_map) ->
+                        {
+                            if(group_map.containsKey(name)){
+                                group_map.remove(name);
+                            }
+                        });
+
+                    topics.forEach((topic_name,topic_map) ->
+                        {
+                            if(topic_map.containsKey(name)){
+                                topic_map.remove(name);
+                            }
+                        });
                 }
                 if (out != null) {
                     writers.remove(out);
@@ -272,7 +294,7 @@ public class ChatServer {
                 try {
                     socket.close();
                 } catch (IOException e) {
-                
+                    
                 }
             }
         }
