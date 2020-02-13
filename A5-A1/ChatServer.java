@@ -16,7 +16,8 @@ public class ChatServer {
     //hashmap because you need to get the connection based on the name
     private static HashMap<String, PrintWriter> cl_name_conn = new HashMap<String, PrintWriter>();
     private static HashMap<String, HashMap<String, PrintWriter>> groups = new HashMap<String, HashMap<String, PrintWriter>>(); 
-    
+    private static HashMap<String, HashMap<String, PrintWriter>> topics = new HashMap<String, HashMap<String, PrintWriter>>(); 
+   
     private static HashSet<String> names = new HashSet<String>();
 
     
@@ -77,18 +78,37 @@ public class ChatServer {
                 
                 
                 
-                String input;
-                String [] split_input;
+                
                 String reconstruct;
                 String first_word;
                 PrintWriter writer_local;
                 while (true) {
                     reconstruct = "";
-                    input = in.readLine();
+                    final String input = in.readLine();
                     System.out.println("["+name+"] "+input);
-                    split_input = input.split(" ");
+                    final String[] split_input = input.split(" ");
                     first_word =  split_input[0];
+                    final String local_name = name;
                     
+                    //go trough connections
+                    cl_name_conn.forEach((name_conn,writer_l) ->
+                    {
+                        for(int i = 0; i<split_input.length;i++){
+                            //if word is a topic
+                            if(topics.containsKey(split_input[i])){
+                                // if connection subscribed to topic
+                                if(topics.get(split_input[i]).containsKey(name_conn)){
+                                    
+                                    writer_l.println("["+split_input[1]+"]"+local_name+":"+input);
+                                    writer_l.flush();
+                                    //only need to display the message once
+                                    i  = split_input.length;
+                                }
+                            }
+                        }
+                    });
+                    
+
                     //here we implement the dictionary
                     // could make classes but meh
                     if(first_word.equals("REGISTER")){
@@ -175,15 +195,55 @@ public class ChatServer {
                             }
                         }
                     }
-
                     else if(first_word.equals("REMOVE")){
-                        if(split_input.length < 2)
+                        if(split_input.length < 2 || split_input.length > 2)
                         {   out.println("REMOVE <group>");}
                         else {
                             groups.remove(split_input[1]);
                         }
                     }
-                    
+                    else if(first_word.equals("TOPIC")){
+                        if(split_input.length < 2 || split_input.length > 2)
+                        { out.println("TOPIC <keyword>");}
+                        else{
+                            topics.put(split_input[1],new HashMap<String, PrintWriter>());
+                            topics.get(split_input[1]).put(name,out);
+                            topics.get(split_input[1]).get(name).println("You are subscribed to "+ split_input[1]);
+                        } 
+                    }
+                    else if(first_word.equals("TOPICS")){
+                        topics.forEach((name_topic,writer_l) ->
+                        {
+                            out.println(name_topic);
+                        });
+                    }
+                    else if(first_word.equals("SUBSCRIBE")){
+                        if(split_input.length < 2 || split_input.length > 2)
+                        {   out.println("SUBSCRIBE <keyword>");}
+                        else {
+                            topics.get(split_input[1]).put(name,out);
+                            topics.get(split_input[1]).get(name).println("You subscribed to "+ split_input[1]);
+                        }
+                        
+                    }
+                    else if(first_word.equals("UNSUBSCRIBE"))
+                        if(split_input.length<2 || split_input.length >2)
+                        {out.println("UNSUBSCRIBE <keyword>");}
+                        else{
+                            if(topics.containsKey(split_input[1])){
+                                if(topics.get(split_input[1]).containsKey(name)){
+                                    topics.get(split_input[1]).remove(name);
+                                    out.println("You have been unsubscribed from "+ split_input[1]);
+                                }
+                                else {
+                                    out.println("You are not subscribed to "+split_input[1]);
+                                }
+                            }
+                            else {
+                                out.println("The topic does not exist.");
+                            }
+                        }
+
                     if(!name.equals("unknown"+conn_counter_str) && !first_word.equals("SEND"))
                     {    
                         final String local_input = input;

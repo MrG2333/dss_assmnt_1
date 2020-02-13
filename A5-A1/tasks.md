@@ -1,8 +1,8 @@
 [ ] Subscription to topics of interest
 
-[ ] TOPIC
-    - [ ] create topic hashmap of hashmaps
-[ ] TOPICS
+[x] TOPIC
+    - [x] create topic hashmap of hashmaps
+[x] TOPICS
     [ ] List all topic 
 [ ] SUBSCRIBE <keyword>
     SUBSCRIBE to topic
