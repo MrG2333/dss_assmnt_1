@@ -16,7 +16,6 @@ public class ChatServer {
     //hashmap because you need to get the connection based on the name
     private static HashMap<String, PrintWriter> cl_name_conn = new HashMap<String, PrintWriter>();
     private static HashMap<String, HashMap<String, PrintWriter>> groups = new HashMap<String, HashMap<String, PrintWriter>>(); 
-    private static HashMap<String, HashMap<String, PrintWriter>> topics = new HashMap<String, HashMap<String, PrintWriter>>(); 
     
     private static HashSet<String> names = new HashSet<String>();
 
@@ -185,7 +184,6 @@ public class ChatServer {
                         }
                     }
                     
-
                     if(!name.equals("unknown"+conn_counter_str) && !first_word.equals("SEND"))
                     {    
                         final String local_input = input;
