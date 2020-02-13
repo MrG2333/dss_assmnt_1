@@ -3,6 +3,13 @@
 
 
 \documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{51768284}
+\lhead{George Stoian}
 \date{}
 \setcounter{secnumdepth}{0}
 
@@ -52,19 +59,12 @@ UNSUBSCRIBE <keyword>
 
 \end{verbatim}
 
-\section{Server behaviour}
+\section{Server behaviour(A5-A1)}
 If a client closes the connection with CTRL+C then the server send to its out stdout that A client has closed the connection. And that the connection client record will be deleted from groups, topics and the name,connection HashMaps.
 
-\section{Client behaviour}
+\section{Client behaviour(A5-A1)}
 The client sends a message to the Server, if the message had commands then the server resposnds acordingly. If no commands have been given then the message is relayed to all other clients. If the client is part of group and receives a message from another member of that group then the message has the group name in front of it. If a client wants to send a message to a group but he is not part of it then the client is informed that he first has to JOIN the group.
 If a client SUBSCRIBES to a topic then he is informed of any message sent on the server that contains that message. If the user sends a message to another client then that message is showed only to that client excepting the case where someone is subscribed to a topic that is part of the message. This causes a certain lack of privacy has been implemented in this way because grade A requirements were considered to have priory over grade B requirements.
-
-\section{Examples with screenshots}
-Create a Group.
-- 3 users
-- 1 server
-Purpose: Demonstrate that the message is given only to the users part of the group.
-
 
 \end{document}
 
