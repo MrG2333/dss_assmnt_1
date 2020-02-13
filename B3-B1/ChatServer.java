@@ -79,10 +79,11 @@ public class ChatServer {
                 
                 String input;
                 String [] split_input;
-                String reconstruct = "";
+                String reconstruct;
                 String first_word;
                 PrintWriter writer_local;
                 while (true) {
+                    reconstruct = "";
                     input = in.readLine();
                     System.out.println("["+name+"] "+input);
                     split_input = input.split(" ");
@@ -106,11 +107,25 @@ public class ChatServer {
                             RegisterName(name, out);
                     }
                     else if(first_word.equals("SEND")){
-                            
                             if(split_input.length<3)
                             {   out.println("SEND <name> message");}
                             else {
-                                if (cl_name_conn.containsKey(split_input[1])) {
+                                if(groups.containsKey(split_input[1])){
+                                    for (int i = 2; i < split_input.length; i++) {                      
+                                        reconstruct = reconstruct+" "+split_input[i];
+                                    final String group_name=split_input[1];
+                                    final String local_name = name;
+                                    final String local_reconstruct = reconstruct;
+                                    groups.get(split_input[1]).forEach((name_conn,writer_l) ->
+                                    {
+                                        writer_l.println("["+group_name+"]"+local_name+": "+local_reconstruct) ;
+                                        writer_l.flush();
+                                    });
+                                   
+                                    }
+                                }
+                                //check if part of group
+                                else if (cl_name_conn.containsKey(split_input[1])) {
                                     writer_local = cl_name_conn.get(split_input[1]);
                                     for (int i = 2; i < split_input.length; i++) {                      
                                         reconstruct = reconstruct+" "+split_input[i];
@@ -118,7 +133,7 @@ public class ChatServer {
                                     System.out.println("["+name+"] "+reconstruct);
                                     writer_local.println(name +": " + reconstruct); 
                                     writer_local.flush();
-                            }
+                                }
                             }    
                         
                         }
@@ -126,11 +141,48 @@ public class ChatServer {
                         if(split_input.length<3)
                         {   out.println("CREATE GROUP <group>");}
                             else{
-                                groups.put(split_input[2],cl_name_conn);
-                                groups.get(split_input[2]).get(name).println("this is from the group ");
+                                groups.put(split_input[2],new HashMap<String, PrintWriter>());
+                                groups.get(split_input[2]).put(name,out);
+                                groups.get(split_input[2]).get(name).println("Group created, you are part of it.");
                         }
                     }
-                    
+
+                    else if(first_word.equals("JOIN")){
+                        if(split_input.length<2)
+                        {   out.println("JOIN <group>");}
+                        else{
+                            if(!groups.containsKey(split_input[1])){
+                                out.println("Does not contain group.");
+                            }
+                            else{
+                                groups.get(split_input[1]).put(name,out);
+                                out.println("Connected to group: " + split_input[1]);
+                            }
+                        }
+                    }
+                    else if(first_word.equals("LEAVE")){
+                        if(split_input.length<2)
+                        { out.println("LEAVE <group>");}
+                        else{
+                            if(!groups.containsKey(split_input[1])){
+                                out.println("Group does not exists.");
+                            }
+                            else if(!groups.get(split_input[1]).containsKey(name) ) {
+                                out.println("You are already not part of this group.");
+                            }
+                            else{
+                                groups.get(split_input[1]).remove(name);
+                            }
+                        }
+                    }
+
+                    else if(first_word.equals("REMOVE")){
+                        if(split_input.length < 2)
+                        {   out.println("REMOVE <group>");}
+                        else {
+                            groups.remove(split_input[1]);
+                        }
+                    }
                     
                     if(!name.equals("unknown"+conn_counter_str) && !first_word.equals("SEND"))
                     {    

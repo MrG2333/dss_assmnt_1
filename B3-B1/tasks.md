@@ -6,11 +6,12 @@
  *          where clients can leave and join and leave thse groups
  *      [ ] set of commands for groups , not list all groups required 
  *          - [x] CREATE group
- *          - [ ] JOIN group
+ *          - [x] JOIN group
  *          - [ ] LEAVE group
  *          - [ ] REMOVE group
  *      [x] command for message to a person
-            [x] SEND
+            [x] SEND to person
+            [ ] SEND to group
  * 
  *      Security not a concern for this assignment but better do things server side.
  */
